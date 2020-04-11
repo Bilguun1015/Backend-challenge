@@ -9,7 +9,7 @@ describe('users model', () => {
     describe('find', () => {
         it('should find all the users', async () => {
             const saved = await db('users');
-            const find = await Users.find()
+            const find = await Users.find();
             expect(find).toHaveLength(saved.length);
         })
         it('Testing users table seed data', async () => {
@@ -17,13 +17,15 @@ describe('users model', () => {
             const middleUser = await db('users').where({id : 25}).first();
             const lastUser = await db('users').where({id:50}).first();
             expect(firstUser['name']).toBe('John Justice Wheeler');
-            expect(middleUser['created_at']).toStrictEqual("2017-11-21 00:40:16.025961")
+            expect(middleUser['created_at']).toStrictEqual("2017-11-21 00:40:16.025961");
             expect(lastUser['github_username']).toHaveLength(0);
         })
         it('findById from users model', async () => {
             const middleUser = await db('users').where({id : 25}).first();
             const findById = await Users.findById(25);
-            expect(middleUser).toStrictEqual(findById)
+            const noUser = await Users.findById(100);
+            expect(noUser).toStrictEqual(undefined);
+            expect(middleUser).toStrictEqual(findById);
         })
-    })
-})
+    });
+});
