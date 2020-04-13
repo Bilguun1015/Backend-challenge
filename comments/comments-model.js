@@ -1,14 +1,14 @@
 const db = require('../database/db-config.js');
 
 module.exports = {
-    find,
+    findByPostId,
     findById,
     add,
     remove
 };
 
-function find(post_id) {
-    return db('comments').where({post_id}).orderBy('updated_at');
+function findByPostId(post_id) {
+    return db('comments').where({post_id}).orderBy('commented_at', 'desc');
 }
 
 function findById(id) {

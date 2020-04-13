@@ -15,6 +15,7 @@ To get the server running locally:
 
 -    NodeJS
 -    Sqlite3
+-    Knex.js
 
 
 ## Environment Variables
@@ -24,5 +25,5 @@ No environment varialbles are needed
 
 ### Feature Requests
 
-I would love to hear from you about new features which would improve this app and further the aims of this project. Please provide as much detail and information as possible to show us why you think your new feature should be implemented.
+I would love to hear from you about new features which would improve this app and further the aims of this project. Please provide as much detail and information as possible to show me why you think your new feature should be implemented.
 

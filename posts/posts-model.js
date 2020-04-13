@@ -3,7 +3,7 @@ const db = require('../database/db-config.js');
 module.exports = {
     find,
     findByUserId,
-    findByUserPostId,
+    findByID,
     add
 };
 
@@ -12,14 +12,14 @@ function find() {
 };
 
 function findByUserId(user_id) {
-    return db('posts').where({user_id});
+    return db('posts').where({user_id}).orderBy('created_at', 'desc');
 };
 
-function findByUserPostId(user_id, post_id){
-    return db('posts').where({user_id: user_id, id: post_id})
+function findByID(id){
+    return db('posts').where({id}).first();
 }
 
 async function add(user_id, title, body) {
     const [id] = await db('posts').insert({user_id: user_id, title:title, body:body}, 'id');
-    return findByUserPostId(user_id, id)
+    return findByID(id)
 }

@@ -25,7 +25,7 @@ function validatePost(req, res, next) {
     }
     Users.findById(user_id).then(user => {
         if(user === undefined) {
-            res.status(400).json({message: 'invalid user id.'})
+            return res.status(400).json({message: 'invalid user id.'})
         }
         next();
     }).catch(err => {
