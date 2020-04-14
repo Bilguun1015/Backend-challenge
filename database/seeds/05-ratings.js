@@ -5,9 +5,9 @@ exports.seed = async function(knex, Promise){
     const chunkSize = 100;
     return knex.batchInsert('ratings', jsonData, chunkSize)
         .then(function(ids){
-            console.log(ids)
+            console.log(ids);
         })
         .catch(function(err) {
-            console.log(err)
-        })
+            console.log(err);
+        });
 };

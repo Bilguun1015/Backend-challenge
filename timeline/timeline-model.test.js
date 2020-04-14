@@ -8,10 +8,14 @@ describe('posts model', () => {
     it('should set environment to testing', () => {
         expect(process.env.DB_ENV).toBe('testing');
     });
-    describe('get rating', () => {
-        it("should find average of a user's rating", async () => {
+    describe('GET', () => {
+        it("should return average of a user's rating", async () => {
             const avgRating = await Timeline.findUserRating(5).first();
             console.log(avgRating);
+        })
+        it("should return data for user's timeline activities", async () => {
+            const data = await Timeline.finalQuery(1);
+            console.log(data)
         })
     });
 });

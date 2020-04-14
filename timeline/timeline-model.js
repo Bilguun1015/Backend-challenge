@@ -7,6 +7,7 @@
 // when they push commits to a branch
 // What to do?
 // have 4 different tables to work with
+// find Posts made by 
 const axios = require('axios');
 const db = require('../database/db-config.js');
 
@@ -23,7 +24,14 @@ const findUserById = (user_id) => {
 
 //find the user posts
 const findUserPosts = (user_id) => {
-    return db('posts').where({user_id}).orderBy('created_at', 'desc');
+    return db('comments')
+        .innerJoin('posts', 'posts.id', 'comments.post_id')
+        .select(['posts.title', 'posts.created_at',
+            db.raw('ARRAY_AGG(comments.messsage) as comments')])
+        .groupBy('posts.id')
+        // .where({'posts.user_id': user_id})
+        .limit(50)
+        .orderBy('posts.created_at')
 };
 
 //find the user comments
@@ -36,8 +44,12 @@ function findUserRating(user_id) {
 }
 
 async function finalQuery (user_id) {
-    let finalData = {};
-    finalData['userInfo'] = await findUserById(user_id);
-    finalData['userRating'] = await findUserRating(user_id);
-    finalData['userPosts'] = await findUserPosts(user_id);   
+    // let finalData = {};
+    // finalData['userInfo'] = await findUserById(user_id);
+    // const [userRating] = await findUserRating(user_id);
+    // finalData['userRating'] = await parseFloat(userRating['rating']).toFixed(2);
+    // finalData['userPosts'] = await findUserPosts(user_id);
+    const postsComments =  await findUserPosts(user_id)
+    return postsComments
+    // return finalData;
 }
