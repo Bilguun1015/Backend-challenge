@@ -11,45 +11,56 @@
 const axios = require('axios');
 const db = require('../database/db-config.js');
 
+//find the user
+const findUserById = (user_id) => {
+    return db('users').where({id : user_id}).first();
+};
+
+//find the user posts
+const findUserPosts = (user_id, limit) => {
+    return db('comments as c')
+        .join('posts as p', 'c.post_id', 'p.id')
+        .select('p.title', 'p.posted_at','c.post_id', 'p.user_id')
+        .where({'p.user_id': user_id})
+        .count('c.message as comments')
+        .groupBy('c.post_id')
+        .limit(limit)
+        .orderBy('p.posted_at', 'desc')
+};
+
+//find the user comments
+const findUserComments = (user_id, limit) => {
+    return db('comments as c')
+        .join('posts as p', 'p.id', 'c.post_id')
+        .join('users as u', 'u.id', 'p.user_id')
+        .select('u.id','u.name', 'c.commented_at')
+        .where({'c.user_id': user_id})
+        .limit(limit)
+        .orderBy('c.commented_at', 'desc');
+}
+
+const findUserRating = (user_id) => {
+    return db('ratings').where({user_id}).avg('rating as rating');
+}
+
+async function finalQuery (user_id, limit) {
+    let finalData = {};
+    finalData['user_info'] = await findUserById(user_id);
+    const [userRating] = await findUserRating(user_id);
+    if(userRating['rating'] >= 4){
+        finalData.user_info['user_rating'] = userRating['rating'];
+    }
+    finalData['user_posts'] = await findUserPosts(user_id, limit);
+    let users = await findUserComments(user_id, limit);
+    for(let user of users){
+        let [avg] = await findUserRating(user.id)
+        user['rating'] = avg.rating
+    }
+    finalData['user_comments'] = users
+    return finalData;
+}
 
 module.exports = {
     finalQuery,
     findUserRating
 };
-
-//find the user
-const findUserById = (user_id) => {
-    return db('users').where({id : user_id});
-};
-
-//find the user posts
-const findUserPosts = (user_id) => {
-    return db('comments')
-        .innerJoin('posts', 'posts.id', 'comments.post_id')
-        .select(['posts.title', 'posts.created_at',
-            db.raw('ARRAY_AGG(comments.messsage) as comments')])
-        .groupBy('posts.id')
-        // .where({'posts.user_id': user_id})
-        .limit(50)
-        .orderBy('posts.created_at')
-};
-
-//find the user comments
-const findUserComments = (user_id) => {
-    return db('comments').where({user_id}).orderBy('created_at', 'desc');
-}
-
-function findUserRating(user_id) {
-    return db('ratings').where({user_id}).avg('rating as rating');
-}
-
-async function finalQuery (user_id) {
-    // let finalData = {};
-    // finalData['userInfo'] = await findUserById(user_id);
-    // const [userRating] = await findUserRating(user_id);
-    // finalData['userRating'] = await parseFloat(userRating['rating']).toFixed(2);
-    // finalData['userPosts'] = await findUserPosts(user_id);
-    const postsComments =  await findUserPosts(user_id)
-    return postsComments
-    // return finalData;
-}
