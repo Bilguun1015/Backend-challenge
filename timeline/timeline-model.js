@@ -11,12 +11,10 @@
 const axios = require('axios');
 const db = require('../database/db-config.js');
 
-//find the user
 const findUserById = (user_id) => {
     return db('users').where({id : user_id}).first();
 };
 
-//find the user posts
 const findUserPosts = (user_id, limit) => {
     return db('comments as c')
         .join('posts as p', 'c.post_id', 'p.id')
@@ -28,7 +26,6 @@ const findUserPosts = (user_id, limit) => {
         .orderBy('p.posted_at', 'desc')
 };
 
-//find the user comments
 const findUserComments = (user_id, limit) => {
     return db('comments as c')
         .join('posts as p', 'p.id', 'c.post_id')
@@ -43,24 +40,38 @@ const findUserRating = (user_id) => {
     return db('ratings').where({user_id}).avg('rating as rating');
 }
 
+const findGithubInfo = async (github_name) => {
+    const data = await axios.get(`https://api.github.com/users/${github_name}/events/public`);
+    return data.data;
+}
+
 async function finalQuery (user_id, limit) {
     let finalData = {};
-    finalData['user_info'] = await findUserById(user_id);
+
+    const user = await findUserById(user_id);
+    finalData['user_info'] = user;
+    if(user['github_username']){
+        finalData['github_activities'] = await findGithubInfo(user['github_username'])
+    }
     const [userRating] = await findUserRating(user_id);
+
     if(userRating['rating'] >= 4){
         finalData.user_info['user_rating'] = userRating['rating'];
     }
+
     finalData['user_posts'] = await findUserPosts(user_id, limit);
     let users = await findUserComments(user_id, limit);
     for(let user of users){
-        let [avg] = await findUserRating(user.id)
-        user['rating'] = avg.rating
+        let [avg] = await findUserRating(user.id);
+        user['rating'] = avg.rating;
     }
-    finalData['user_comments'] = users
+    finalData['user_comments'] = users;
+
     return finalData;
 }
 
 module.exports = {
     finalQuery,
-    findUserRating
+    findUserRating,
+    findGithubInfo
 };

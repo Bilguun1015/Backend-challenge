@@ -14,7 +14,7 @@ describe('posts model', () => {
             console.log(avgRating);
         })
         it("should return data for user's timeline activities", async () => {
-            const data = await Timeline.finalQuery(1, 10);
+            const data = await Timeline.finalQuery(5,10);
             console.log(data)
         })
     });
