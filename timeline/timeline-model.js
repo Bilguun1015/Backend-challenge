@@ -15,7 +15,7 @@ const findUserById = (user_id) => {
     return db('users').where({id : user_id}).first();
 };
 
-const findUserPosts = (user_id, limit) => {
+const findUserPosts = (user_id, limit, offset) => {
     return db('comments as c')
         .join('posts as p', 'c.post_id', 'p.id')
         .select('p.title', 'p.posted_at','c.post_id', 'p.user_id')
@@ -23,16 +23,18 @@ const findUserPosts = (user_id, limit) => {
         .count('c.message as comments')
         .groupBy('c.post_id')
         .limit(limit)
+        .offset(offset)
         .orderBy('p.posted_at', 'desc')
 };
 
-const findUserComments = (user_id, limit) => {
+const findUserComments = (user_id, limit, offset) => {
     return db('comments as c')
         .join('posts as p', 'p.id', 'c.post_id')
         .join('users as u', 'u.id', 'p.user_id')
         .select('u.id','u.name', 'c.commented_at')
         .where({'c.user_id': user_id})
         .limit(limit)
+        .offset(offset)
         .orderBy('c.commented_at', 'desc');
 }
 
@@ -45,8 +47,10 @@ const findGithubInfo = async (github_name) => {
     return data.data;
 }
 
-async function finalQuery (user_id, limit) {
+async function finalQuery (user_id, limit, page) {
     let finalData = {};
+    if (page < 1) page = 1;
+    let offset = (page - 1) * limit;
 
     const user = await findUserById(user_id);
     finalData['user_info'] = user;
@@ -59,8 +63,8 @@ async function finalQuery (user_id, limit) {
         finalData.user_info['user_rating'] = userRating['rating'];
     }
 
-    finalData['user_posts'] = await findUserPosts(user_id, limit);
-    let users = await findUserComments(user_id, limit);
+    finalData['user_posts'] = await findUserPosts(user_id, limit, offset);
+    let users = await findUserComments(user_id, limit, offset);
     for(let user of users){
         let [avg] = await findUserRating(user.id);
         user['rating'] = avg.rating;

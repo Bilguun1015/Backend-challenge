@@ -10,7 +10,7 @@ const server = express();
 server.use(express.urlencoded());
 server.use(express.json());
 
-server.use('/api', timelineRouter);
+server.use('/api/timeline', timelineRouter);
 server.use('/api/post', postsRouter);
 server.use('/api/comments', commentsRouter);
 server.use('/api/ratings', ratingsRouter);
