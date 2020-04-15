@@ -38,7 +38,7 @@ const findUserComments = (user_id, limit, offset) => {
     return db('comments as c')
         .join('posts as p', 'p.id', 'c.post_id')
         .join('users as u', 'u.id', 'p.user_id')
-        .select('u.id','u.name', 'c.commented_at')
+        .select('u.id','u.name', 'c.commented_at', 'p.title', 'c.post_id')
         .where({'c.user_id': user_id})
         .limit(limit)
         .offset(offset)

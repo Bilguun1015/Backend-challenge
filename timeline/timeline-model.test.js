@@ -10,12 +10,18 @@ describe('posts model', () => {
     });
     describe('GET', () => {
         it("should return average of a user's rating", async () => {
-            const avgRating = await Timeline.findUserRating(1).first();
-            console.log(avgRating)
+            const avgRating = await Timeline.findUserRating(36).first();
+            const rates = await db('ratings').select('rating').where({user_id: 36})
+            let sum = 0;
+            for(let rate of rates){
+                sum += rate.rating
+            };
+            let avg = sum/rates.length
+            expect(avgRating.rating).toEqual(avg);
         })
         it("should return data for user's timeline activities", async () => {
             const data = await Timeline.finalQuery(1,10,2);
-            console.log(data)
+            // console.log(data)
         })
         it('should return number of comments', async () => {
             const comments = await db('comments').where({post_id: 74});
