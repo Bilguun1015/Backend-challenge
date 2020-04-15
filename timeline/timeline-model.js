@@ -16,8 +16,8 @@ const findUserById = (user_id) => {
 };
 
 const findUserPosts = (user_id, limit, offset) => {
-    return db('comments as c')
-        .join('posts as p', 'c.post_id', 'p.id')
+    return db('posts as p')
+        .join('comments as c', 'c.post_id', 'p.id')
         .select('p.title', 'p.posted_at','c.post_id', 'p.user_id')
         .where({'p.user_id': user_id})
         .count('c.message as comments')
@@ -26,6 +26,13 @@ const findUserPosts = (user_id, limit, offset) => {
         .offset(offset)
         .orderBy('p.posted_at', 'desc')
 };
+
+const countPosts = (user_id) => {
+    return db('posts')
+        .where({user_id})
+        .count('* as count')
+        .first()
+}
 
 const findUserComments = (user_id, limit, offset) => {
     return db('comments as c')
@@ -49,8 +56,18 @@ const findGithubInfo = async (github_name) => {
 
 async function finalQuery (user_id, limit, page) {
     let finalData = {};
+    let pagination = {};
     if (page < 1) page = 1;
     let offset = (page - 1) * limit;
+
+    let count = await countPosts(user_id);
+
+    pagination['per_page'] = limit;
+    pagination['offset'] = offset;
+    pagination['current_page'] = page;
+    pagination['last_page'] = Math.ceil(count.count / limit);
+
+    finalData['pagination'] = pagination;
 
     const user = await findUserById(user_id);
     finalData['user_info'] = user;
@@ -77,5 +94,7 @@ async function finalQuery (user_id, limit, page) {
 module.exports = {
     finalQuery,
     findUserRating,
-    findGithubInfo
+    findGithubInfo,
+    findUserPosts,
+    countPosts
 };
