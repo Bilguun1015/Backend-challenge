@@ -7,7 +7,7 @@ const commentsRouter = require('./comments/comments-router.js');
 const ratingsRouter = require('./ratings/ratings-router.js');
 
 const server = express();
-server.use(express.urlencoded());
+// server.use(express.urlencoded());
 server.use(express.json());
 
 server.use('/api/timeline', timelineRouter);

@@ -15,9 +15,11 @@ describe('posts model', () => {
             expect(comments).toHaveLength(3)
         });
 
-        it('should return added comment', async () => {
+        it('should return added comment and delete it', async () => {
             const newComment = await Comments.add(1,1,'It is a test message!');
             expect(newComment['message']).toStrictEqual('It is a test message!');
+            const delComment = await Comments.remove(newComment['id']);
+            expect(delComment).toEqual(1)
         });
     });
 });
