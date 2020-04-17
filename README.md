@@ -1,6 +1,6 @@
 # API Documentation
 
-#### [Postman API Documentation](https://documenter.getpostman.com/view/11044268/SzezaWGe?version=latest#696d8a39-b8bc-47b0-888d-6205bafe58bc)
+#### [Postman API Documentation](https://web.postman.co/collections/11044268-7da2cd6f-b9fa-47aa-a1a5-ac8dcac6b3c6?version=latest&workspace=1db9c581-1fb4-421b-87d0-155f961a0925)
 
 ## Getting started
 
