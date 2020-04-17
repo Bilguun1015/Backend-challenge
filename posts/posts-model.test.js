@@ -18,7 +18,6 @@ describe('posts model', () => {
             // let user_id = Math.floor((Math.random() * 50) + 1)
             let user_id = 50
             const posts = await db('posts').where({user_id})
-            console.log(posts)
             const postsSame = await Posts.findByUserId(user_id)
             expect(posts).toStrictEqual(postsSame)
         })

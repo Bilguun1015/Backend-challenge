@@ -21,7 +21,6 @@ describe('posts model', () => {
         })
         it("should return data for user's timeline activities", async () => {
             const data = await Timeline.finalQuery(1,10,2);
-            // console.log(data)
         })
         it('should return number of comments', async () => {
             const comments = await db('comments').where({post_id: 74});
@@ -32,7 +31,6 @@ describe('posts model', () => {
         })
         it('should return the count of user posts', async () => {
             const count = await Timeline.countPosts(1)
-            console.log(count)
         })
     });
 });

@@ -21,7 +21,7 @@ exports.up = function(knex) {
     })
     .createTable('comments', tbl => {
       tbl.increments();
-      tbl.text('message').notNullable;
+      tbl.text('message').notNullable();
       tbl.integer('user_id').unsigned().notNullable().references('id').inTable('users');
       tbl.integer('post_id').unsigned().notNullable().references('id').inTable('posts');
       tbl.timestamp('commented_at').defaultTo(knex.fn.now());

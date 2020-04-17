@@ -1,22 +1,14 @@
 const router = require('express').Router();
 
 const Comments = require('./comments-model.js');
+const Users = require('../users/users-model.js');
 
-router.post('/add', (req, res) => {
-    const { post_id, user_id, msg } = req.body;
-    if(!msg) {
-        return res.status(400).json({ message: 'Comment is required.'})
-    }
-    if(!post_id) {
-        return res.status(400).json({ message: 'post_id is required.'})
-    }
-    if(!user_id) {
-        return res.status(400).json({ message: 'user_id is required.'})
-    }
-    Comments.add(post_id, user_id, msg).then(comment => {
+router.post('/add', validateComment, (req, res) => {
+    const { post_id, user_id, message } = req.body;
+
+    Comments.add(post_id, user_id, message).then(comment => {
         res.status(201).json(comment);
     }).catch(err => {
-        console.log(err)
         res.status(500).json(err)
     });
 });
@@ -36,9 +28,39 @@ router.delete('/delete', (req, res) => {
             res.status(404).json(err);
         });
     }).catch(err => {
-        res.status(500).json({message: 'Backend error'})
+        res.status(500).json(err)
     })
     
 });
+
+//middleware
+
+function validateComment(req, res, next) {
+    const { user_id, post_id, message } = req.body;
+    if(!user_id){
+        return res.status(400).json({message: 'user_id required'});
+    };
+
+    if(user_id[0] === '0'){
+        return res.status(400).json({message: 'invalid user id.'});
+    };
+
+    if(!parseInt(user_id[0])){
+        return res.status(400).json({message: 'invalid user id.'});
+    };
+
+    if(!post_id || !message) {
+        return res.status(400).json({message: 'post_id and message required.'});
+    };
+
+    Users.findById(user_id).then(user => {
+        if(user === undefined) {
+            return res.status(400).json({message: 'invalid user id.'});
+        }
+        next();
+    }).catch(err => {
+        res.status(500).json(err);
+    });
+};
 
 module.exports = router

@@ -1,13 +1,3 @@
-// The goal is to provide a simple end point to the mobile clients to display user's timeline
-// newest post that the user made
-// comments that the user wrote
-// when they surpass a 4 star rating
-// if the user has github account, when they create a repo
-// when they open a new pull request
-// when they push commits to a branch
-// What to do?
-// have 4 different tables to work with
-// find Posts made by 
 const axios = require('axios');
 const db = require('../database/db-config.js');
 
